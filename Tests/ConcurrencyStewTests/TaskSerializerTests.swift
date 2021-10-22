@@ -5,20 +5,44 @@ final class TaskSerializerTests: XCTestCase {
     func testTasksAreExecutedInOrderOnANonReentrantActor() async {
         let actor = NonReentrantActor()
 
-        let t1 = Task.detached { await actor.add(index1: 0, index2: 1, milliseconds: 1_000) }
-        let t2 = Task.detached { await actor.add(index1: 2, index2: 3, milliseconds: 100) }
-        let t3 = Task.detached { await actor.add(index1: 4, index2: 5, milliseconds: 10) }
-        let t4 = Task.detached { await actor.add(index1: 6, index2: 7, milliseconds: 10) }
+        let t1 = Task.detached { try await actor.add(index1: 0, index2: 1, milliseconds: 1_000) }
+        let t2 = Task.detached { try await actor.add(index1: 2, index2: 3, milliseconds: 100) }
+        let t3 = Task.detached { try await actor.add(index1: 4, index2: 5, milliseconds: 10) }
+        let t4 = Task.detached { try await actor.add(index1: 6, index2: 7, milliseconds: 10) }
 
-        let r1 = await t1.value
-        let r2 = await t2.value
-        let r3 = await t3.value
-        let r4 = await t4.value
+        let r1 = try? await t1.value
+        let r2 = try? await t2.value
+        let r3 = try? await t3.value
+        let r4 = try? await t4.value
         
         let inOrder = await actor.result.isInOrder()
         
         XCTAssertEqual(1, r1)
         XCTAssertEqual(3, r2)
+        XCTAssertEqual(5, r3)
+        XCTAssertEqual(7, r4)
+        XCTAssertTrue(inOrder)
+    }
+    
+    func testTasksAreStillExecutedInOrderOnANonReentrantActorIfATaskInTheMiddleIsCancelled() async {
+        let actor = NonReentrantActor()
+
+        let t1 = Task.detached { try await actor.add(index1: 0, index2: 1, milliseconds: 1_000) }
+        let t2 = Task.detached { try await actor.add(index1: 2, index2: 3, milliseconds: 100) }
+        let t3 = Task.detached { try await actor.add(index1: 4, index2: 5, milliseconds: 10) }
+        let t4 = Task.detached { try await actor.add(index1: 6, index2: 7, milliseconds: 10) }
+
+        t2.cancel()
+        
+        let r1 = try? await t1.value
+        let r2 = try? await t2.value
+        let r3 = try? await t3.value
+        let r4 = try? await t4.value
+        
+        let inOrder = await actor.result.isInOrder()
+        
+        XCTAssertEqual(1, r1)
+        XCTAssertEqual(nil, r2)
         XCTAssertEqual(5, r3)
         XCTAssertEqual(7, r4)
         XCTAssertTrue(inOrder)
@@ -51,10 +75,10 @@ fileprivate actor NonReentrantActor {
     private let taskSerializer = TaskSerializer()
     private(set) var result: [Int] = []
     
-    func add(index1: Int, index2: Int, milliseconds: UInt64) async -> Int {
-        return await taskSerializer.execute {
+    func add(index1: Int, index2: Int, milliseconds: UInt64) async throws -> Int {
+        return try await taskSerializer.execute {
             await self.addIndex(index: index1)
-            await Task.sleep(milliseconds * 1_000)
+            try await Task.sleep(nanoseconds: milliseconds * 1_000)
             await self.addIndex(index: index2)
             return index2
         }
