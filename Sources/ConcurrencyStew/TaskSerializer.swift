@@ -1,20 +1,28 @@
 public actor TaskSerializer {
-    private var previousTask: Task<Void, Error>? = nil
+    private var previousTask: Awaitable? = nil
     
     public init() {}
     
-    public func execute(action: @Sendable @escaping () async throws -> Void) async rethrows {
+    public func execute<T>(action: @Sendable @escaping () async throws -> T) async rethrows -> T {
         let previousTask = self.previousTask
-        let newTask = Task {
-            let _ = await previousTask?.result
+        let newTask = Task { () async throws -> T in
+            await previousTask?.completion()
             try Task.checkCancellation()
-            try await action()
+            return try await action()
         }
-        self.previousTask = newTask
-        try await withTaskCancellationHandler {
+        self.previousTask = Awaitable(task: newTask)
+        return try await withTaskCancellationHandler {
             try await newTask.value
         } onCancel: {
             newTask.cancel()
         }
+    }
+}
+
+fileprivate struct Awaitable {
+    let completion: () async -> Void
+    
+    init<R, E: Error>(task: Task<R, E>) {
+        self.completion = { let _ = await task.result }
     }
 }
