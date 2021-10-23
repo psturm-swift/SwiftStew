@@ -76,11 +76,11 @@ final class AsyncSectionTests: XCTestCase {
 }
 
 fileprivate actor NonReentrantActor {
-    private let taskSerializer = AsyncSection()
+    private let section = AsyncSection()
     private(set) var result: [Int] = []
     
     func add(index1: Int, index2: Int, milliseconds: UInt64) async throws -> Int {
-        return try await taskSerializer.execute {
+        return try await section.execute {
             await self.addIndex(index: index1)
             try await Task.sleep(nanoseconds: milliseconds * 1_000)
             await self.addIndex(index: index2)
