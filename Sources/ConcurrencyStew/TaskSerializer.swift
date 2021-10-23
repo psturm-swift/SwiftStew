@@ -42,8 +42,8 @@ public actor TaskSerializer {
     /// - Parameters:
     ///   - action: Asynchronous function that should be executed. The function may throw and return a value.
     /// - Returns: The return value of `action`
-    /// - Throws: The error thrown by `action`
-    public func execute<T>(action: @Sendable @escaping () async throws -> T) async rethrows -> T {
+    /// - Throws: The error thrown by `action`. Especially throws `CancellationError` if the parent task has been cancelled.
+    public func execute<T>(action: @Sendable @escaping () async throws -> T) async throws -> T {
         let previousTask = self.previousTask
         let newTask = Task { () async throws -> T in
             await previousTask?.completion()
