@@ -6,6 +6,8 @@
 /// `AsyncThrowingUnfoldSequence` works quite similiar to `UnfoldSequence`.
 /// The elements of the sequence are computed asynchronously and lazily. The sequence might produce an infinite
 /// number of elements.
+/// Instances of AsyncThrowingUnfoldSequence are created by functions ``asyncSequence(first:next:)``
+/// and ``asyncSequence(state:next:)``.
 public struct AsyncThrowingUnfoldSequence<Element, State>: AsyncSequence {
     public typealias NextClosure = @Sendable (inout State) async throws -> Element?
 
@@ -25,12 +27,38 @@ public struct AsyncThrowingUnfoldSequence<Element, State>: AsyncSequence {
     /// - Parameters:
     ///   - state: The initial state from which the first element is computed
     ///   - next: The closure that updates the `state` and returns the next element. `next` is allowed to throw errors.
-    public init(state: State, next: @escaping NextClosure) {
+    init(state: State, next: @escaping NextClosure) {
         self.state = state
         self.next = next
     }
     
     public func makeAsyncIterator() -> AsyncIterator {
         AsyncIterator(state: self.state, next: self.next)
+    }
+}
+
+/// Creates  an asynchronous sequence by an initial state and an asynchronous throwing closure.
+/// - Parameters:
+///   - state: The initial state from which the first element is computed
+///   - next: The closure that updates the `state` and returns the next element. `next` is allowed to throw errors.
+public func asyncSequence<Element, State>(
+    state: State,
+    next: @escaping AsyncThrowingUnfoldSequence<Element, State>.NextClosure
+) -> AsyncThrowingUnfoldSequence<Element, State> {
+    AsyncThrowingUnfoldSequence<Element, State>(state: state, next: next)
+}
+
+/// Creates  an asynchronous sequence by an initial state and an asynchronous throwing closure.
+/// - Parameters:
+///   - first: First element of the sequence.
+///   - next: The closure computes asynchronous the next element from the previous element
+public func asyncSequence<Element>(
+    first: Element,
+    next: @escaping @Sendable (Element) async throws -> Element?
+) -> AsyncThrowingUnfoldSequence<Element, Element?> {
+    asyncSequence(state: first) { state async throws -> Element? in
+        guard let current = state else { return nil }
+        state = try await next(current)
+        return current
     }
 }
