@@ -1,5 +1,5 @@
 # SwiftStew
-`SwiftStew` is a collection of modules with possibly unrelated utility functions and classes. 
+`SwiftStew` is a collection of utility functions and classes separated into different modules.
 
 ## Modules
 The package consists currently of the following modules:
