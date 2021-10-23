@@ -5,7 +5,7 @@
 import XCTest
 @testable import ConcurrencyStew
 
-final class TaskSerializerTests: XCTestCase {
+final class AsyncSectionTests: XCTestCase {
     func testTasksAreExecutedInOrderOnANonReentrantActor() async {
         let actor = NonReentrantActor()
 
@@ -76,7 +76,7 @@ final class TaskSerializerTests: XCTestCase {
 }
 
 fileprivate actor NonReentrantActor {
-    private let taskSerializer = TaskSerializer()
+    private let taskSerializer = AsyncSection()
     private(set) var result: [Int] = []
     
     func add(index1: Int, index2: Int, milliseconds: UInt64) async throws -> Int {

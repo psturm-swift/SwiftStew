@@ -2,14 +2,14 @@
 //
 // See LICENSE file for licensing information.
 
-/// `TaskSerializer`  ensures that asynchronous functions are processed in sequence
+/// `AsyncSection`  ensures that asynchronous functions are processed in sequence
 ///
-///  With `TaskSerizalizer` it is possible to make actors non-reentrant.
+///  With `AsyncSection` it is possible to make actors non-reentrant.
 ///  The following example actor functions `a` and `b` cannot interleave although they await another actor.
 ///  ```swift
 ///  actor A {
 ///      private var x: Int = 0
-///      private let serializer = TaskSerializer()
+///      private let serializer = AsyncSection()
 ///      private var other: OtherActor
 ///
 ///      func a() async {
@@ -30,14 +30,14 @@
 ///      }
 ///  }
 ///  ```
-public actor TaskSerializer {
+public actor AsyncSection {
     private var previousTask: Completeable? = nil
     
-    /// Constructs an instance of `TaskSerializer`
+    /// Constructs an instance of `AsyncSection`
     public init() {}
 
     /// Executes an action right after the previous action has been finished. This ensures that  one action after the other
-    ///  can be executed on ``TaskSerializer``.
+    ///  can be executed on ``AsyncSection``.
     ///
     /// - Parameters:
     ///   - action: Asynchronous function that should be executed. The function may throw and return a value.
