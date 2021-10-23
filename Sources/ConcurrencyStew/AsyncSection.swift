@@ -1,5 +1,4 @@
 // Copyright (c) 2021 Patrick Sturm <psturm-swift@e.mail.de>
-//
 // See LICENSE file for licensing information.
 
 /// `AsyncSection`  ensures that asynchronous functions are processed in sequence
