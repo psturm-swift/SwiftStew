@@ -24,7 +24,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -133,7 +134,7 @@ iOSInjectionProject/
 Packages
 xcuserdata
 *.xcodeproj
-
+.swiftpm
 
 ### Windows ###
 # Windows thumbnail cache files
