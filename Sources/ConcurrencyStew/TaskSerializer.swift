@@ -1,28 +1,49 @@
 // Copyright (c) 2021 Patrick Sturm <psturm-swift@e.mail.de>
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// See LICENSE file for licensing information.
 
+/// `TaskSerializer`  ensures that asynchronous functions are processed in sequence
+///
+///  With `TaskSerizalizer` it is possible to make actors non-reentrant.
+///
+///  In the following example actor functions `a` and `b` cannot interleave although they await another actor.
+///  ```swift
+///  actor A {
+///      private var x: Int = 0
+///      private let serializer = TaskSerializer()
+///      private var other: OtherActor
+///
+///      func a() async {
+///          await serializer.execute {
+///              x += 1
+///              await other.a()
+///              x -= 1
+///          }
+///      }
+///
+///      func b() async -> Int {
+///          return await serializer.execute {
+///              x += 1
+///              await other.b()
+///              x -= 1
+///              return x
+///          }
+///      }
+///  }
+///  ```
 public actor TaskSerializer {
     private var previousTask: Awaitable? = nil
     
+    /// Constructs an instance of `TaskSerializer`
     public init() {}
-    
+
+    /// Executes an action right after the previous action has been finished. This ensures that  one action after the other
+    ///  can be executed on ``TaskSerializer``.
+    ///
+    /// - Parameters:
+    ///   - action: Asynchronous function that should be executed. The function may throw and return a value.
+    /// - Returns: The return value of `action`
+    /// - Throws: The error thrown by `action`
     public func execute<T>(action: @Sendable @escaping () async throws -> T) async rethrows -> T {
         let previousTask = self.previousTask
         let newTask = Task { () async throws -> T in
