@@ -31,7 +31,7 @@
 ///  }
 ///  ```
 public actor TaskSerializer {
-    private var previousTask: Awaitable? = nil
+    private var previousTask: Completeable? = nil
     
     /// Constructs an instance of `TaskSerializer`
     public init() {}
@@ -50,7 +50,7 @@ public actor TaskSerializer {
             try Task.checkCancellation()
             return try await action()
         }
-        self.previousTask = Awaitable(task: newTask)
+        self.previousTask = Completeable(task: newTask)
         return try await withTaskCancellationHandler {
             try await newTask.value
         } onCancel: {
@@ -59,7 +59,7 @@ public actor TaskSerializer {
     }
 }
 
-fileprivate struct Awaitable {
+fileprivate struct Completeable {
     let completion: () async -> Void
     
     init<R, E: Error>(task: Task<R, E>) {
