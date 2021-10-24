@@ -4,6 +4,7 @@
 import XCTest
 @testable import ConcurrencyStew
 
+@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 final class AsyncSectionTests: XCTestCase {
     func testTasksAreExecutedInOrderOnANonReentrantActor() async {
         let actor = NonReentrantActor()
@@ -74,6 +75,7 @@ final class AsyncSectionTests: XCTestCase {
     }
 }
 
+@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 fileprivate actor NonReentrantActor {
     private let section = AsyncSection()
     private(set) var result: [Int] = []
@@ -92,6 +94,7 @@ fileprivate actor NonReentrantActor {
     private func addIndex(index: Int) { result.append(index) }
 }
 
+@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 fileprivate actor ReentrantActor {
     private(set) var result: [Int] = []
     

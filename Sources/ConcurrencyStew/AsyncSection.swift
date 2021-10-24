@@ -29,6 +29,7 @@
 ///      }
 ///  }
 ///  ```
+@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 public actor AsyncSection {
     private var previousTask: Completeable? = nil
     
@@ -58,6 +59,7 @@ public actor AsyncSection {
     }
 }
 
+@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 fileprivate struct Completeable {
     let completion: () async -> Void
     

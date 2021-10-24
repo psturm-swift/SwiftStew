@@ -5,6 +5,7 @@ import XCTest
 import Foundation
 @testable import ConcurrencyStew
 
+@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 final class AsyncThrowingUnfoldSequenceTests: XCTestCase {
     func testSimpleAsyncThrowingUnfoldSequence() async throws {
         let delayMilliSeconds: UInt64 = 10
