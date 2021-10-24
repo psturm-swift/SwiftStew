@@ -6,8 +6,8 @@
 /// `AsyncUnfoldSequence` works quite similiar to `UnfoldSequence`.
 /// The elements of the sequence are computed asynchronously and lazily. The sequence might produce an infinite
 /// number of elements.
-/// Instances of AsyncUnfoldSequence are created by functions ``asyncSequence(first:next:)``
-/// and ``asyncSequence(state:next:)``.
+/// Instances of AsyncUnfoldSequence are created by functions ``asyncSequence(first:next:)-5zqfo``
+/// and ``asyncSequence(state:next:)-190na``.
 @available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 public struct AsyncUnfoldSequence<Element, State>: AsyncSequence {
     public typealias NextClosure = @Sendable (inout State) async -> Element?
