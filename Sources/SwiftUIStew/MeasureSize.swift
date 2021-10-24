@@ -76,17 +76,17 @@ public struct ReadWidthModifier: ViewModifier {
 
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 extension View {
-    /// Updates the binding is value of ``SizePreferenceKey``did change
+    /// Updates the binding if value of ``SizePreferenceKey``did change
     public func read(size: Binding<CGSize?>) -> some View {
         return self.modifier(ReadSizeModifier(size: size))
     }
 
-    /// Updates the binding is value of ``SizePreferenceKey``did change
+    /// Updates the binding if value of ``SizePreferenceKey``did change
     public func read(height: Binding<CGFloat?>) -> some View {
         return self.modifier(ReadHeightModifier(height: height))
     }
 
-    /// Updates the binding is value of ``SizePreferenceKey``did change
+    /// Updates the binding if value of ``SizePreferenceKey``did change
     public func read(width: Binding<CGFloat?>) -> some View {
         return self.modifier(ReadWidthModifier(width: width))
     }
