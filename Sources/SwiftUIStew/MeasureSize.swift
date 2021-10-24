@@ -32,12 +32,19 @@ public struct MeasureSizeModifier: ViewModifier {
 }
 
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
+extension View {
+    public func measureSize() -> some View {
+        return self.modifier(MeasureSizeModifier())
+    }
+}
+
+
+@available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 public struct ReadSizeModifier: ViewModifier {
     @Binding public var size: CGSize?
     
     public func body(content: Content) -> some View {
         content
-            .modifier(MeasureSizeModifier())
             .onPreferenceChange(SizePreferenceKey.self) { size = $0 }
     }
 }
@@ -48,7 +55,6 @@ public struct ReadHeightModifier: ViewModifier {
     
     public func body(content: Content) -> some View {
         content
-            .modifier(MeasureSizeModifier())
             .onPreferenceChange(SizePreferenceKey.self) { height = $0.height }
     }
 }
@@ -59,22 +65,21 @@ public struct ReadWidthModifier: ViewModifier {
     
     public func body(content: Content) -> some View {
         content
-            .modifier(MeasureSizeModifier())
             .onPreferenceChange(SizePreferenceKey.self) { width = $0.width }
     }
 }
 
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 extension View {
-    public func measureSize(size: Binding<CGSize?>) -> some View {
+    public func read(size: Binding<CGSize?>) -> some View {
         return self.modifier(ReadSizeModifier(size: size))
     }
 
-    public func measureHeight(height: Binding<CGFloat?>) -> some View {
+    public func read(height: Binding<CGFloat?>) -> some View {
         return self.modifier(ReadHeightModifier(height: height))
     }
 
-    public func measureWidth(width: Binding<CGFloat?>) -> some View {
+    public func read(width: Binding<CGFloat?>) -> some View {
         return self.modifier(ReadWidthModifier(width: width))
     }
 }
