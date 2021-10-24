@@ -32,7 +32,7 @@
 ///  ```
 @available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 public actor AsyncSection {
-    /// Describes the policy how `AsyncSection` should handle the previous action if a new one has been passed.
+    /// The policy describes how `AsyncSection` handles the previous action if a new one should be executed.
     public enum Policy {
         case cancelPreviousAction
         case waitOnPreviousAction
