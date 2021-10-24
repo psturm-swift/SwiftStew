@@ -4,7 +4,8 @@
 /// `AsyncSection`  ensures that asynchronous functions are processed in sequence
 ///
 ///  With `AsyncSection` it is possible to make actors non-reentrant.
-///  The following example actor functions `a` and `b` cannot interleave although they await another actor.
+///  The following example shows how to avoid that two actor functions `a` and `b`
+///  interleaves although they await another actor.
 ///  ```swift
 ///  actor A {
 ///      private var x: Int = 0

@@ -4,6 +4,7 @@
 #if os(iOS) || os(watchOS) || os(tvOS) || os(macOS)
 import SwiftUI
 
+/// A key for specifying the preferred size of a component.
 @available(iOS 13.0.0, tvOS 13.0.0, *)
 public struct SizePreferenceKey: PreferenceKey {
     public static let defaultValue: CGSize = .zero
@@ -16,6 +17,7 @@ public struct SizePreferenceKey: PreferenceKey {
     }
 }
 
+/// Stores the size of a SwiftUI view as pereference (see ``SizePreferenceKey``)
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 public struct MeasureSizeModifier: ViewModifier {
     public func body(content: Content) -> some View {
@@ -31,6 +33,7 @@ public struct MeasureSizeModifier: ViewModifier {
     }
 }
 
+/// Writes the view's size as preference with preference key ``SizePreferenceKey``
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 extension View {
     public func measureSize() -> some View {
@@ -38,7 +41,7 @@ extension View {
     }
 }
 
-
+/// Reads the size for preference key ``SizePreferenceKey`` if changed
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 public struct ReadSizeModifier: ViewModifier {
     @Binding public var size: CGSize?
@@ -49,6 +52,7 @@ public struct ReadSizeModifier: ViewModifier {
     }
 }
 
+/// Reads the height for preference key ``SizePreferenceKey`` if changed
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 public struct ReadHeightModifier: ViewModifier {
     @Binding public var height: CGFloat?
@@ -59,6 +63,7 @@ public struct ReadHeightModifier: ViewModifier {
     }
 }
 
+/// Reads the width for preference key ``SizePreferenceKey`` if changed
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 public struct ReadWidthModifier: ViewModifier {
     @Binding public var width: CGFloat?
@@ -71,14 +76,17 @@ public struct ReadWidthModifier: ViewModifier {
 
 @available(iOS 13.0.0, tvOS 13.0.0, macOS 11.0.0, *)
 extension View {
+    /// Updates the binding is value of ``SizePreferenceKey``did change
     public func read(size: Binding<CGSize?>) -> some View {
         return self.modifier(ReadSizeModifier(size: size))
     }
 
+    /// Updates the binding is value of ``SizePreferenceKey``did change
     public func read(height: Binding<CGFloat?>) -> some View {
         return self.modifier(ReadHeightModifier(height: height))
     }
 
+    /// Updates the binding is value of ``SizePreferenceKey``did change
     public func read(width: Binding<CGFloat?>) -> some View {
         return self.modifier(ReadWidthModifier(width: width))
     }
