@@ -11,18 +11,30 @@ final class AsyncThrowingUnfoldSequenceTests: XCTestCase {
         let expectedResult = [0, 1, 2, 3, 4]
         
         let timer = asyncSequence(first: 0, next: { i in
+            if i == expectedResult.count {
+                throw CancellationError()
+            }
             await Task.sleep(delayMilliSeconds * 1_000_000)
             return i + 1
         })
         
         let start = Date().timeIntervalSince1970
         var actualValues: [Int] = []
-        for try await i in timer.prefix(expectedResult.count) {
-            actualValues.append(i)
+        var execeptionHasBeenThrown = false
+        
+        do {
+            for try await i in timer {
+                actualValues.append(i)
+            }
         }
+        catch {
+            execeptionHasBeenThrown = true
+        }
+        
         let end = Date().timeIntervalSince1970
         let durationMilliSeconds = UInt64(((end - start) * 1000.0).rounded())
 
+        XCTAssertTrue(execeptionHasBeenThrown)
         XCTAssertEqual(expectedResult, actualValues)
         XCTAssertGreaterThanOrEqual(
             durationMilliSeconds,
