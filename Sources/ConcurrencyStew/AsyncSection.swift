@@ -32,7 +32,7 @@
 ///  ```
 @available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 public actor AsyncSection {
-    private var previousTask: Completeable? = nil
+    private var previousTask: AnyTask? = nil
     
     /// Constructs an instance of `AsyncSection`
     public init() {}
@@ -51,20 +51,11 @@ public actor AsyncSection {
             try Task.checkCancellation()
             return try await action()
         }
-        self.previousTask = Completeable(task: newTask)
+        self.previousTask = AnyTask(inner: newTask)
         return try await withTaskCancellationHandler {
             try await newTask.value
         } onCancel: {
             newTask.cancel()
         }
-    }
-}
-
-@available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
-fileprivate struct Completeable {
-    let completion: () async -> Void
-    
-    init<R, E: Error>(task: Task<R, E>) {
-        self.completion = { let _ = await task.result }
     }
 }
