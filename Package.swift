@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftStew",
+    platforms: [.macOS(.v12), .iOS(.v12), .watchOS(.v8), .tvOS(.v12), .macCatalyst(.v15), .driverKit(.v21)],
     products: [
         .library(
             name: "ConcurrencyStew",
