@@ -1,19 +1,19 @@
 // Copyright (c) 2021 Patrick Sturm <psturm-swift@e.mail.de>
 // See LICENSE file for licensing information.
 
-/// `AsyncSection`  ensures that asynchronous functions are processed in sequence
+/// `AsyncQueue`  ensures that asynchronous functions are processed in sequence
 ///
-///  With `AsyncSection` it is possible to make actors non-reentrant.
+///  `AsyncQueue` can be used to make actors non-reentrant.
 ///  The following example shows how to avoid that two actor functions `a` and `b`
 ///  interleaves although they await another actor.
 ///  ```swift
 ///  actor A {
 ///      private var x: Int = 0
-///      private let serializer = AsyncSection()
+///      private let queue = AsyncQueue()
 ///      private var other: OtherActor
 ///
 ///      func a() async {
-///          await serializer.execute {
+///          await queue.execute {
 ///              x += 1
 ///              await other.a()
 ///              x -= 1
@@ -21,7 +21,7 @@
 ///      }
 ///
 ///      func b() async -> Int {
-///          return await serializer.execute {
+///          return await queue.execute {
 ///              x += 1
 ///              await other.b()
 ///              x -= 1
@@ -31,8 +31,9 @@
 ///  }
 ///  ```
 @available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
-public actor AsyncSection {
-    /// The policy describes how `AsyncSection` handles the previous action if a new one should be executed.
+public actor AsyncQueue {
+    /// The policy describes how `AsyncQueue` handles the previous action if a new one should be executed.
+    /// If policy is `cancelPreviousAction` then there can be only one async action on the queue at most.
     public enum Policy {
         case cancelPreviousAction
         case waitOnPreviousAction
@@ -41,7 +42,7 @@ public actor AsyncSection {
     private let policy: Policy
     private var previousTask: AnyTask? = nil
     
-    /// Constructs an instance of `AsyncSection`
+    /// Constructs an instance of `AsyncQueue`
     /// - Parameters:
     ///   - policy:Specifies  how function `execute(action:)` should handle the previous action
     public init(policy: Policy = .waitOnPreviousAction) {
@@ -49,7 +50,7 @@ public actor AsyncSection {
     }
 
     /// Executes an action right after the previous action has been finished. This ensures that  one action after the other
-    ///  can be executed on ``AsyncSection``. If `policy` is set to `Policy.cancelPreviousAction`, then
+    ///  can be executed on ``AsyncQueue``. If `policy` is set to `Policy.cancelPreviousAction`, then
     ///  the previous action will be cancelled before the new action will be started.
     ///
     /// - Parameters:

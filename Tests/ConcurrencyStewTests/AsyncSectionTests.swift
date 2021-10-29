@@ -97,11 +97,11 @@ final class AsyncSectionTests: XCTestCase {
 
 @available(iOS 15.0.0, macOS 12.0.0, tvOS 15.0.0, watchOS 8.0.0, *)
 fileprivate actor TestActor {
-    private let section: AsyncSection
+    private let section: AsyncQueue
     private(set) var result: [Int] = []
     
-    init(policy: AsyncSection.Policy = .waitOnPreviousAction) {
-        self.section = AsyncSection(policy: policy)
+    init(policy: AsyncQueue.Policy = .waitOnPreviousAction) {
+        self.section = AsyncQueue(policy: policy)
     }
 
     func executeReentrant(id: Int, executionTimeMS: UInt64) async throws -> Int {
