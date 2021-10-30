@@ -109,7 +109,7 @@ fileprivate actor TestActor {
     }
     
     func executeNonReentrant(id: Int, executionTimeMS: UInt64) async throws -> Int {
-        try await queue.execute {
+        try await queue.perform {
             try await self.execute(id, executionTimeMS)
         }
     }

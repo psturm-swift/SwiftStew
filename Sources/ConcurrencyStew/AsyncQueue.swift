@@ -49,7 +49,7 @@ public actor AsyncQueue {
         self.policy = policy
     }
 
-    /// Executes an action right after the previous action has been finished. This ensures that  one action after the other
+    /// Performs an action right after the previous action has been finished. This ensures that  one action after the other
     ///  can be executed on ``AsyncQueue``. If `policy` is set to `Policy.cancelPreviousAction`, then
     ///  the previous action will be cancelled before the new action will be started.
     ///
@@ -57,7 +57,7 @@ public actor AsyncQueue {
     ///   - action: Asynchronous function that should be executed. The function may throw and return a value.
     /// - Returns: The return value of `action`
     /// - Throws: The error thrown by `action`. Especially throws `CancellationError` if the parent task has been cancelled.
-    public func execute<T>(action: @Sendable @escaping () async throws -> T) async throws -> T {
+    public func perform<T>(action: @Sendable @escaping () async throws -> T) async throws -> T {
         let newTask = Task { [policy, previousTask] () async throws -> T in
             if policy == .cancelPreviousAction {
                 previousTask?.cancel()
